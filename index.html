@@ -1,8 +1,330 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arrow Out — Play Arrow Out Game Online Free</title>
+  <meta name="description" content="Play Arrow Out free online — a brain-teasing arrow puzzle where you pull the right arrows out in the right order to clear the board. No download, play instantly in your browser." />
+  <meta name="keywords" content="Arrow Out, Arrow Out game, play Arrow Out online, free arrow puzzle, arrow unblock puzzle, brain teaser arrows" />
+  <link rel="canonical" href="https://arrowout.github.io/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Arrow Out — Play Arrow Out Game Online Free" />
+  <meta property="og:description" content="Pull the arrows out in the right order to clear the board. A free, addictive arrow puzzle you can play instantly in your browser." />
+  <meta property="og:url" content="https://arrowout.github.io/" />
+  <meta property="og:image" content="https://arrowout.github.io/icon.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://arrowout.github.io/icon.png" />
+
+  <link rel="icon" type="image/png" href="icon.png" />
+  <link rel="apple-touch-icon" href="icon.png" />
+
+  <style>
+    :root {
+      --cream: #ece3d1;
+      --cream-2: #f6f0e3;
+      --card: #ffffff;
+      --ink: #3b3528;
+      --muted: #8c8472;
+      --orange: #ff8a3d;
+      --orange-dark: #e36f22;
+      --blue: #2fb1ff;
+      --green: #5bc83a;
+      --green-dark: #3a9e21;
+      --pink: #ff5a8a;
+      --purple: #9b6bff;
+      --bar: #2c2740;
+      --header-h: 60px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Baloo 2", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--ink);
+      background-color: var(--cream);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 90 90'%3E%3Cg fill='none' stroke='%23d8cdb4' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 30 H50 M40 20 L52 30 L40 40'/%3E%3Cpath d='M78 75 H40 M50 65 L38 75 L50 85'/%3E%3C/g%3E%3C/svg%3E");
+      line-height: 1.7;
+    }
+
+    /* ===== Full-width brand header ===== */
+    .header {
+      position: sticky; top: 0; z-index: 50;
+      height: var(--header-h);
+      background: linear-gradient(180deg, var(--orange) 0%, var(--orange-dark) 100%);
+      border-bottom: 4px solid rgba(0,0,0,.18);
+      box-shadow: 0 2px 10px rgba(0,0,0,.15);
+    }
+    .header .inner {
+      height: 100%; max-width: 1180px; margin: 0 auto; padding: 0 18px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
+    .brand .ico { display: block; width: 36px; height: 36px; border-radius: 9px; box-shadow: 0 3px 0 rgba(0,0,0,.18); }
+    .brand .logo { font-weight: 800; font-size: 1.45rem; color: #fff; letter-spacing: .01em; text-shadow: 0 2px 0 rgba(0,0,0,.18); }
+    .brand .logo span { color: #fff6da; }
+    .nav-cta {
+      color: var(--orange-dark); background: #fff; text-decoration: none;
+      font-weight: 800; font-size: .9rem; padding: 9px 18px; border-radius: 999px;
+      box-shadow: 0 4px 0 rgba(0,0,0,.18); transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .nav-cta:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,.18); }
+
+    /* ===== Full-width play band (arrow-pattern stage) ===== */
+    .play-band {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 14px 12px 18px;
+    }
+    .hero-head { text-align: center; padding: 18px 16px 4px; }
+    .hero-head h1 {
+      font-size: clamp(2.1rem, 6vw, 3.2rem); line-height: 1; font-weight: 800; letter-spacing: .01em;
+      -webkit-text-stroke: 4px #fff; paint-order: stroke fill;
+      filter: drop-shadow(0 4px 0 rgba(0,0,0,.14));
+    }
+    .hero-head h1 .a { color: var(--blue); }
+    .hero-head h1 .b { color: var(--orange); }
+    .hero-head .tagline { color: var(--muted); margin-top: 8px; font-size: clamp(.85rem, 2.4vw, 1rem); max-width: 600px; margin-inline: auto; }
+
+    .game-frame {
+      display: flex; flex-direction: column;
+      border-radius: 18px; overflow: hidden;
+      background: var(--bar);
+      border: 4px solid #fff;
+      box-shadow: 0 16px 40px rgba(59,53,40,.30);
+    }
+    /* Landscape / wide screens → 16:9，宽高同时受首屏约束 */
+    .game-stage {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      width: min(calc(100vw - 20px), 1180px, calc((100svh - 156px) * 16 / 9));
+      background: #000;
+    }
+    .game-stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+
+    .game-loader {
+      position: absolute; inset: 0; z-index: 5;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 16px; background: var(--cream-2); transition: opacity .3s ease;
+    }
+    .game-loader .ring { width: 52px; height: 52px; border-radius: 50%; border: 5px solid rgba(0,0,0,.10); border-top-color: var(--orange); animation: spin .9s linear infinite; }
+    .game-loader .txt { color: var(--muted); font-weight: 700; font-size: 1rem; letter-spacing: .04em; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* game bottom toolbar */
+    .game-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 46px; padding: 0 14px; color: #fff;
+    }
+    .game-bar .name { font-weight: 800; font-size: .95rem; letter-spacing: .02em; }
+    .fs-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,.14); color: #fff; border: 0; cursor: pointer;
+      font: inherit; font-weight: 700; font-size: .85rem; padding: 7px 14px; border-radius: 10px;
+      transition: background .15s ease;
+    }
+    .fs-btn:hover { background: rgba(255,255,255,.26); }
+    .fs-btn svg { width: 16px; height: 16px; }
+
+    /* ===== Fullscreen：参考 /game/arrow-out-online/play 的处理——
+       让游戏台填满整屏、隐藏外围 chrome，内部游戏在黑底里自适应居中。
+       各 vendor 前缀必须分开成独立规则，避免不识别的选择器导致整条失效。 ===== */
+    #gameFrameBox:fullscreen { width: 100vw; height: 100vh; border: 0; border-radius: 0; background: #000; }
+    #gameFrameBox:fullscreen .game-stage { width: 100vw; height: 100vh; max-width: none; aspect-ratio: auto; }
+    #gameFrameBox:fullscreen .game-bar { display: none; }
+
+    #gameFrameBox:-webkit-full-screen { width: 100vw; height: 100vh; border: 0; border-radius: 0; background: #000; }
+    #gameFrameBox:-webkit-full-screen .game-stage { width: 100vw; height: 100vh; max-width: none; aspect-ratio: auto; }
+    #gameFrameBox:-webkit-full-screen .game-bar { display: none; }
+
+    #gameFrameBox:-moz-full-screen { width: 100vw; height: 100vh; border: 0; border-radius: 0; background: #000; }
+    #gameFrameBox:-moz-full-screen .game-stage { width: 100vw; height: 100vh; max-width: none; aspect-ratio: auto; }
+    #gameFrameBox:-moz-full-screen .game-bar { display: none; }
+
+    /* ===== Content ===== */
+    .wrap { max-width: 820px; margin: 0 auto; padding: 22px 20px 80px; }
+    .wrap section { background: var(--card); border-radius: 20px; padding: 26px 28px; margin-top: 22px; box-shadow: 0 8px 24px rgba(59,53,40,.10); }
+    h2 { font-size: 1.55rem; font-weight: 800; margin-bottom: 12px; color: var(--ink); }
+    h2 .mark { color: var(--orange); }
+    p { margin-bottom: 10px; }
+    ul, ol { margin: 8px 0 4px 22px; }
+    li { margin-bottom: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+    td { padding: 10px 12px; border-bottom: 1px solid #efe7d6; vertical-align: top; }
+    td:first-child { color: var(--muted); font-weight: 700; width: 38%; }
+    .shots {
+      display: flex; gap: 14px; margin-top: 6px;
+      overflow-x: auto; padding: 4px 2px 12px;
+      scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+    }
+    .shots img {
+      flex: 0 0 auto;
+      height: clamp(260px, 52vw, 340px); width: auto;
+      border-radius: 12px; background: #1b1830; display: block;
+      border: 1px solid rgba(0,0,0,.06); box-shadow: 0 1px 5px rgba(0,0,0,.14);
+      scroll-snap-align: start;
+    }
+    .shots::-webkit-scrollbar { height: 8px; }
+    .shots::-webkit-scrollbar-thumb { background: #d8cdb4; border-radius: 99px; }
+
+    .faq dt { font-weight: 800; margin-top: 16px; }
+    .faq dd { color: var(--muted); margin: 2px 0 0; }
+    .btn {
+      display: inline-block; margin-top: 8px; padding: 14px 38px;
+      background: var(--green); color: #fff; text-decoration: none;
+      font-weight: 800; font-size: 1.1rem; border-radius: 16px;
+      box-shadow: 0 5px 0 var(--green-dark); transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .btn:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--green-dark); }
+    footer { text-align: center; color: var(--muted); margin-top: 36px; font-size: .92rem; }
+    footer a { color: var(--purple); font-weight: 700; text-decoration: none; }
+
+    /* Portrait / phones → 9:16 */
+    @media (max-aspect-ratio: 1 / 1) {
+      .game-stage {
+        aspect-ratio: 9 / 16;
+        width: min(calc(100vw - 20px), calc((100svh - 150px) * 9 / 16));
+      }
+    }
+  </style>
 </head>
 <body>
-Arrow Out
+  <header class="header">
+    <div class="inner">
+      <a class="brand" href="https://arrowout.github.io/">
+        <img class="ico" src="icon.png" alt="Arrow Out logo" width="36" height="36" />
+        <span class="logo">Arrow<span>Out</span></span>
+      </a>
+      <a class="nav-cta" href="https://arrow-escape.com/category/escapegames" rel="noopener">More games →</a>
+    </div>
+  </header>
+
+  <section class="play-band">
+    <div class="game-frame" id="gameFrameBox">
+      <div class="game-stage">
+        <div class="game-loader" id="gameLoader">
+          <div class="ring"></div>
+          <div class="txt">Loading Arrow Out…</div>
+        </div>
+        <iframe
+          id="gameFrame"
+          src="https://arrow-escape.com/free/arrow-out-online"
+          title="Arrow Out game"
+          allow="fullscreen; autoplay"
+          referrerpolicy="no-referrer"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-popups"
+        ></iframe>
+      </div>
+      <div class="game-bar">
+        <span class="name">Arrow Out</span>
+        <button class="fs-btn" id="fsBtn" type="button" aria-label="Fullscreen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+          Fullscreen
+        </button>
+      </div>
+    </div>
+
+    <div class="hero-head">
+      <h1><span class="a">Arrow</span> <span class="b">Out</span></h1>
+      <p class="tagline">Play Arrow Out online for free — pull every arrow out of the board in the right order. No download, just instant puzzle fun.</p>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <section>
+      <h2>What Is <span class="mark">Arrow Out</span>?</h2>
+      <p><strong>Arrow Out</strong> is a minimalist unblock-style puzzle game built around one simple, satisfying idea: every arrow can only slide in the direction it points, and your job is to pull them all <em>out</em> of the board. Tap an arrow and it shoots off in its facing direction — but only if nothing is blocking its path. Clear the board by removing the arrows in exactly the right order.</p>
+      <p>It looks easy at first. Then the arrows start overlapping, crossing, and trapping each other, and suddenly every move matters. Arrow Out is the kind of game you pick up for "just one level" and put down twenty levels later.</p>
+    </section>
+
+    <section>
+      <h2>Game Overview</h2>
+      <table>
+        <tr><td>Game</td><td>Arrow Out</td></tr>
+        <tr><td>Genre</td><td>Puzzle / Logic / Unblock</td></tr>
+        <tr><td>Platform</td><td>Browser (Desktop &amp; Mobile)</td></tr>
+        <tr><td>Price</td><td>Free to play</td></tr>
+        <tr><td>Controls</td><td>Click / Tap</td></tr>
+        <tr><td>Download</td><td>Not required — plays instantly online</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2><span class="mark">Arrow Out</span> Screenshots</h2>
+      <div class="shots">
+        <img src="checkpoint14.png" alt="Arrow Out gameplay — Level 14 arrow puzzle" loading="lazy" width="964" height="1528" />
+        <img src="checkpoint14-success.png" alt="Arrow Out Level 14 solved successfully" loading="lazy" width="964" height="1528" />
+        <img src="checkpoint20.png" alt="Arrow Out gameplay — Level 20 arrow puzzle" loading="lazy" width="964" height="1528" />
+        <img src="checkpoint33.png" alt="Arrow Out gameplay — Level 33 arrow puzzle" loading="lazy" width="964" height="1528" />
+      </div>
+    </section>
+
+    <section>
+      <h2>How to Play <span class="mark">Arrow Out</span></h2>
+      <ol>
+        <li><strong>Read the board.</strong> Each arrow points in one fixed direction — up, down, left, or right.</li>
+        <li><strong>Tap to fire.</strong> When you tap an arrow, it tries to slide out of the board along the way it points.</li>
+        <li><strong>Mind the blockers.</strong> If another arrow is in the path, the tapped arrow can't move. You have to clear the blocker first.</li>
+        <li><strong>Plan the order.</strong> Solving a level is all about sequence — which arrow comes out first, second, third?</li>
+        <li><strong>Clear the board.</strong> Remove every arrow to finish the level and unlock the next challenge.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Why Players Love <span class="mark">Arrow Out</span></h2>
+      <ul>
+        <li>✨ <strong>Easy to learn, hard to master</strong> — one-tap controls, deep logical puzzles.</li>
+        <li>🧠 <strong>Real brain training</strong> — builds spatial reasoning and forward planning.</li>
+        <li>📈 <strong>Smooth difficulty curve</strong> — gentle early levels ramp into genuine head-scratchers.</li>
+        <li>📱 <strong>Play anywhere</strong> — works in any browser, on phone or desktop, no install.</li>
+        <li>⏱️ <strong>Perfect bite-sized fun</strong> — great for a quick break or a long session.</li>
+      </ul>
+    </section>
+
+    <section class="faq">
+      <h2>Frequently Asked Questions</h2>
+      <dl>
+        <dt>Is Arrow Out free to play?</dt>
+        <dd>Yes. Arrow Out is completely free and runs right in your browser.</dd>
+        <dt>Do I need to download anything?</dt>
+        <dd>No download or installation needed. The game loads right at the top of this page.</dd>
+        <dt>Can I play Arrow Out on mobile?</dt>
+        <dd>Absolutely — it works on phones, tablets, and desktops with tap or click controls.</dd>
+        <dt>What kind of game is Arrow Out?</dt>
+        <dd>It's a logic/unblock puzzle game where you remove arrows from the board in the correct order.</dd>
+      </dl>
+      <p style="margin-top:20px; text-align:center;">
+        <a class="btn" href="https://arrow-escape.com/" rel="noopener">Explore more arrow games</a>
+      </p>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      var iframe = document.getElementById("gameFrame");
+      var loader = document.getElementById("gameLoader");
+      if (iframe && loader) {
+        var hidden = false;
+        function hideLoader() {
+          if (hidden) return;
+          hidden = true;
+          loader.style.opacity = "0";
+          setTimeout(function () { loader.style.display = "none"; }, 300);
+        }
+        iframe.addEventListener("load", hideLoader);
+        setTimeout(hideLoader, 5000);
+      }
+
+      var fsBtn = document.getElementById("fsBtn");
+      var box = document.getElementById("gameFrameBox");
+      if (fsBtn && box) {
+        fsBtn.addEventListener("click", function () {
+          var el = box;
+          if (document.fullscreenElement) {
+            (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+          } else {
+            (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
+          }
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
